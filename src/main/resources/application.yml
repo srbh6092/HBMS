@@ -1,0 +1,18 @@
+server:
+  #port number
+  port: 9000
+
+spring:
+  #credentials
+  datasource:
+    url:  jdbc:mysql://localhost:3306/hbms
+    username: root
+    password: Admin@123
+  #sql commands
+  jpa:
+    hibernate:
+      ddl-auto: update
+  #Swagger
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
