@@ -42,4 +42,5 @@ public class UserController {
     public User removeUser(@PathVariable("id") int id) throws Exception {
         return userService.removeUser(id);
     }
+
 }

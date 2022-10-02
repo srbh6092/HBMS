@@ -2,7 +2,6 @@ package com.srbh.hbms.model.entity;
 
 import com.srbh.hbms.model.enums.Role;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

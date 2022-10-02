@@ -13,6 +13,7 @@ import java.util.Collections;
 @Configuration
 public class SwaggerConfig {
 
+    //Configuring api
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -23,6 +24,7 @@ public class SwaggerConfig {
                 .build();
     }
 
+    //Adding metadata
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "HBMS",

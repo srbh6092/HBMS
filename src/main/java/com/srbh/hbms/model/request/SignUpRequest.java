@@ -25,5 +25,7 @@ public class SignUpRequest {
     @Size(min = 10, max = 10, message = "Mobile number should be of 10 digits")
     private String mobile;
 
+    @NotBlank
     private String role;
+
 }
