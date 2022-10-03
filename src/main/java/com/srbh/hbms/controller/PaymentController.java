@@ -32,13 +32,20 @@ public class PaymentController {
 
     @PostMapping
     public Payment makePayment(@RequestBody NewPaymentRequest newPaymentRequest){
+
+        //Setting transaction
         Transaction transaction = Transaction.builder()
                 .amount(newPaymentRequest.getAmount())
                 .build();
+        //Adding transaction
         transaction = transactionService.addTransaction(transaction);
+
+        //Setting payment
         Payment payment = Payment.builder()
                 .transaction(transaction)
+                .status(transaction.validate())
                 .build();
+        //Adding payment
         return paymentService.addPayment(payment);
     }
 

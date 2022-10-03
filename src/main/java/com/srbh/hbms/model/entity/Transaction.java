@@ -1,5 +1,6 @@
 package com.srbh.hbms.model.entity;
 
+import com.srbh.hbms.model.enums.PaymentStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,5 +22,19 @@ public class Transaction {
 
     @NotNull
     private double amount;
+
+    public PaymentStatus validate() {
+        try{
+            transferAmount();
+            return  PaymentStatus.SUCCESSFUL;
+        } catch (Exception e) {
+            System.out.println("Error in transaction: "+e);
+            return PaymentStatus.FAILED;
+        }
+    }
+
+    private void transferAmount() throws Exception {
+        //Transaction through Payment Service Gateway
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.srbh.hbms.service.room;
 
+import com.srbh.hbms.model.entity.Hotel;
 import com.srbh.hbms.model.entity.Room;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,7 @@ public interface RoomService {
     Room addRoom(Room room);
 
     Room removeRoom(int id) throws Exception;
+
+    int numberOfRoomsInHotel(Hotel hotel);
 
 }

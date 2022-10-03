@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService{
@@ -45,12 +44,22 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public Room addRoom(Room room) {
 
+        //Fetching hotel
         Hotel hotel = room.getHotel();
-        double noOfRoomsInHotel = hotelRepository.findAll().stream().filter(e -> e.getHotelName().equals(hotel.getHotelName())).collect(Collectors.toList()).size();
-        hotel.setAvgRatePerDay((hotel.getAvgRatePerDay()*noOfRoomsInHotel+room.getRatePerDay())/(noOfRoomsInHotel+1));
+
+        //Recalculating average rate per day
+        double noOfRoomsInHotel = numberOfRoomsInHotel(hotel);
+        double totalRate = hotel.getAvgRatePerDay()*noOfRoomsInHotel;
+        totalRate = totalRate+room.getRatePerDay();
+        double averageRate = totalRate/(noOfRoomsInHotel+1);
+
+        //Updating the average rate per day
+        hotel.setAvgRatePerDay(averageRate);
         room.setHotel(hotelRepository.save(hotel));
+
         //Adding a row to Room table
         return roomRepository.save(room);
+
     }
 
     @Override
@@ -64,6 +73,11 @@ public class RoomServiceImpl implements RoomService{
 
         //Returning the room fetched
         return room;
+    }
+
+    @Override
+    public int numberOfRoomsInHotel(Hotel hotel) {
+        return roomRepository.findByHotel(hotel).size();
     }
 
 }
