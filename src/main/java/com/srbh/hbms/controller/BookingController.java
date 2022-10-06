@@ -3,6 +3,7 @@ package com.srbh.hbms.controller;
 import com.srbh.hbms.model.entity.*;
 import com.srbh.hbms.model.request.NewBookingRequest;
 import com.srbh.hbms.service.booking.BookingService;
+import com.srbh.hbms.service.generatePDF.GeneratePDF;
 import com.srbh.hbms.service.payment.PaymentService;
 import com.srbh.hbms.service.room.RoomService;
 import com.srbh.hbms.service.transaction.TransactionService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/booking")
@@ -32,6 +34,9 @@ public class BookingController {
     @Autowired
     RoomService roomService;
 
+    @Autowired
+    GeneratePDF generatePDF;
+
     @GetMapping
     public List<Booking> getAllBookings(){
         return bookingService.getAllBookings();
@@ -51,8 +56,8 @@ public class BookingController {
         //Getting number of stays
         Date from = newBookingRequest.getBookedFrom();
         Date to = newBookingRequest.getBookedTo();
-        long diff = to.getTime()- from.getTime();
-        int days = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+
+        int days= getNoOffDays(from, to);
 
         //Initializing entries
         List<Room> rooms = new ArrayList<>();
@@ -90,11 +95,7 @@ public class BookingController {
         Hotel hotel = rooms.get(0).getHotel();
 
         //Initializing total amount
-        double amount=0.0;
-
-        //Adding up all the rooms amount for one day
-        for( Room room: rooms)
-            amount += room.getRatePerDay();
+        double amount = getAmount(rooms);
 
         //Adding transaction for amount for total number days of stay
         Transaction transaction = Transaction.builder()
@@ -127,6 +128,53 @@ public class BookingController {
 
         //Adding booking to the database
         return bookingService.addBooking(booking);
+
+    }
+
+    private double getAmount(List<Room> rooms) {
+
+        //Initializing total amount
+        double amount=0.0;
+
+        //Adding up all the rooms amount for one day
+        for( Room room: rooms)
+            amount += room.getRatePerDay();
+
+        return amount;
+    }
+
+    private int getNoOffDays(Date from, Date to) {
+        long diff = to.getTime()- from.getTime();
+        return (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+    }
+
+    @GetMapping("/bookingDetails/{bookingId}")
+    public String generatePdfById(@PathVariable("bookingId") int bookingId) throws Exception {
+        Booking booking = getBooking(bookingId);
+        generatePdfFile(
+                booking,
+                getNoOffDays(booking.getBookedFrom(),booking.getBookedTo()),
+                getAmount(booking.getRooms())
+        );
+        return "PDF generated";
+    }
+
+    private void generatePdfFile(Booking booking, int days, double amount) {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("booking",booking);
+        data.put("salutation","Hi "+ booking.getUser().getUsername()+",");
+        data.put("currentDate", new Date(System.currentTimeMillis()));
+        data.put("oneDayAmount", amount);
+        data.put("days",days);
+        data.put("from", new Date(booking.getBookedFrom().getTime()));
+        data.put("to",new Date(booking.getBookedTo().getTime()));
+        data.put("amount",days*amount);
+        data.put("paymentId",booking.getPayment().get(booking.getPayment().size()-1).getPaymentId());
+        data.put("rooms",booking.getRooms());
+
+        generatePDF.generatePdf("BookingTemplate", data, "Booking_"+booking.getBookingId()+".pdf");
+
 
     }
 

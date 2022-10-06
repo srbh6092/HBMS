@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+    <head>
+        <style>
+                .header{
+                    padding: 30px;
+                    height: 48px;
+                    background: #D99F9F;
+                    line-height: 10px;
+                }
+                .bd{
+                    float: left;
+                    color: #504747;
+                }
+                .hbms{
+                    float: right;
+                    color: #504747;
+                }
+                .confirmationText{
+                    margin-top: 35px;
+                }
+                .confirmationText td{
+                    color: #504747;
+                }
+                .booking{
+                    margin-top: 35px;
+                }
+                .booking th, .booking td{
+                    align: left;
+                    color: #504747;
+                }
+                .booking th {
+                    width: 160px;
+                    color: #504747;
+                }
+                .roomDetails{
+                    width: 100%;
+                    font-size: 15px;
+                    margin-top: 35px;
+                    line-height: 17px;
+                }
+                .roomDetails th{
+                    border: #E3CDCD;
+                    background: #E3CDCD;
+                    height: 24px;
+                    color: #504747;
+                }
+                .roomDetails td{
+                    margin-top: 15px;
+                    background: #F0F0F0;
+                    height: 24px;
+                    color: #504747;
+                }
+                .summary{
+                    width: 100%;
+                    margin-top: 28px;
+                }
+                .summary th{
+                    height:0px;
+                }
+                .summary td{
+                    margin-top: 15px;
+                    height: 24px;
+                    background: #E1E1E1;
+                    color: #504747;
+                }
+                .payment{
+                    width: 100%;
+                    margin-top: 28px;
+                }
+                .payment th{
+                    height:0px;
+                }
+                .payment td{
+                    margin-top: 15px;
+                    height: 24px;
+                    background: #A4DB8B;
+                    color: #504747;
+                }
+            </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>
+                <small class="bd">Booking Details</small>
+                <small class="hbms">HBMS</small>
+            </h1>
+        </div>
+        <table class="confirmationText">
+            <tr>
+                <td th:text="${salutation}"></td>
+            </tr>
+            <tr>
+                <td>Your booking has been confirmed.</td>
+            </tr>
+        </table>
+        <table class="booking">
+            <tr>
+                <th>Booking ID:</th>
+                <td th:text="${booking.bookingId}"></td>
+            </tr>
+            <tr>
+                <th>Date of Booking :</th>
+                <td th:text="${currentDate}"></td>
+            </tr>
+            <tr>
+                <th>Hotel :</th>
+                <td th:text="${booking.hotel.hotelName}"></td>
+            </tr>
+            <tr>
+                <th>Address :</th>
+                <td th:text="${booking.hotel.address}"></td>
+            </tr>
+            <tr>
+                <th>City :</th>
+                <td th:text="${booking.hotel.city}"></td>
+            </tr>
+            <tr>
+                <th>Booked from :</th>
+                <td th:text="${from}"></td>
+            </tr>
+            <tr>
+                <th>Booked till :</th>
+                <td th:text="${to}"></td>
+            </tr>
+            <tr>
+                <th>No. of Adults :</th>
+                <td th:text="${booking.noOfAdults}"></td>
+            </tr>
+            <tr>
+                <th>No. of Children :</th>
+                <td th:text="${booking.noOfChildren}"></td>
+            </tr>
+        </table>
+        <table class="roomDetails">
+            <tr>
+                <th align= "left">S. No.</th>
+                <th align= "left">Room No.</th>
+                <th align= "left">Room Type</th>
+                <th width="180px" align= "right">Rate per day (in INR)</th>
+            </tr>
+            <tr th:each="room, iterStat: ${rooms}">
+                <td align= "left" th:text="${iterStat.index + 1}"></td>
+                <td align= "left" th:text="${room.roomNo}"></td>
+                <td align= "left" th:text="${room.roomType}"></td>
+                <td width="180px" align= "right" th:text="${room.ratePerDay}"></td>
+            </tr>
+        </table>
+        <table class="summary">
+            <tr>
+                <th align= "left"></th>
+                <th align= "left"></th>
+                <th width="180px" align= "right"></th>
+            </tr>
+            <tr>
+                <td align= "left" colspan="2">Total amount for one day of stay :</td>
+                <td width="180px" align= "right" th:text="${oneDayAmount}"></td>
+            </tr>
+            <tr>
+                <td align= "left" colspan="2">No. of days of stay :</td>
+                <td width="180px" align= "right" th:text="${days}"></td>
+            </tr>
+            <tr>
+                <td align= "left" colspan="2">Grand total :</td>
+                <td width="180px" align= "right" th:text="${amount}"></td>
+            </tr>
+        </table>
+        <table class="payment">
+            <tr>
+                <th align= "left"></th>
+                <th align= "left"></th>
+                <th width="180px" align= "right"></th>
+            </tr>
+            <tr>
+                <td align= "left" colspan="2">Payment ID :</td>
+                <td width="180px" align= "right" th:text="${paymentId}"></td>
+            </tr>
+        </table>
+        <img th:src="@{../static/images/booked.png}"/>
+    </body>
+</html>
