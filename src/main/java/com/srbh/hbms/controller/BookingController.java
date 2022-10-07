@@ -9,11 +9,15 @@ import com.srbh.hbms.service.room.RoomService;
 import com.srbh.hbms.service.transaction.TransactionService;
 import com.srbh.hbms.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
+
+import javax.mail.internet.MimeMessage;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/booking")
@@ -36,6 +40,9 @@ public class BookingController {
 
     @Autowired
     GeneratePDF generatePDF;
+
+    @Autowired
+    JavaMailSender javaMailSender;
 
     @GetMapping
     public List<Booking> getAllBookings(){
@@ -127,7 +134,12 @@ public class BookingController {
                 .build();
 
         //Adding booking to the database
-        return bookingService.addBooking(booking);
+        booking =bookingService.addBooking(booking);
+
+        //Sending mail
+        emailBookingDetails(booking.getBookingId());
+
+        return booking;
 
     }
 
@@ -181,6 +193,43 @@ public class BookingController {
     @DeleteMapping("/{id}")
     public Booking removeBooking(@PathVariable("id") int id) throws Exception {
         return bookingService.removeBooking(id);
+    }
+
+    @GetMapping("/emailBookingDetails/{bookingId}")
+    public String emailBookingDetails(@PathVariable("bookingId") int bookingId) throws Exception {
+
+        //generating PDF
+        Booking booking = bookingService.getBooking(bookingId);
+        int days= getNoOffDays(booking.getBookedFrom(),booking.getBookedTo());
+        double amount =getAmount(booking.getRooms());
+        generatePdfFile(booking,days,amount);
+
+        //Sending email
+        try{
+            //Generate email
+            MimeMessage msg = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(msg,true);
+
+            //Add receiver's address, subject and body message
+            helper.setTo(booking.getUser().getEmail());
+            helper.setSubject("Booking Receipt");
+            helper.setText("Thanks for booking. Please find the receipt attached");
+
+            //Load file from local storage
+            FileSystemResource receiptPDF = new FileSystemResource("E:\\HBMS\\"+"Booking_"+bookingId+".pdf");
+
+            //Attach the file to email
+            helper.addAttachment(receiptPDF.getFilename(),receiptPDF);
+
+            //Send mail
+            javaMailSender.send(msg);
+
+        } catch (Exception e){
+            return "Couldn't send mail: "+e.getMessage();
+        }
+
+        return "Sent mail to: "+booking.getUser().getEmail();
+
     }
 
 }

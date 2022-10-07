@@ -16,5 +16,23 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant-path-matcher
-#
+  #Mail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    #Use gmail account
+    username: senderUsername@gmail.com
+    #Generate app password
+    #Follow steps:https://support.google.com/accounts/answer/185833?hl=en
+    #Use 16 character password instead of email password
+    password: yourGeneratedAppPassword
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#Path to save PDFs
 directory: E:\\HBMS\\
