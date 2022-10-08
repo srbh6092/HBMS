@@ -3,6 +3,7 @@ package com.srbh.hbms.service.user;
 import com.srbh.hbms.model.entity.User;
 import com.srbh.hbms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,6 +55,28 @@ public class UserServiceImpl implements UserService {
 
         //Returning the user fetched
         return user;
+    }
+
+    @Override
+    public User getUser(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (!user.isPresent())
+            throw new UsernameNotFoundException("User not found");
+        return user.get();
+    }
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByMobile(String mobile) {
+        return userRepository.existsByMobile(mobile);
     }
 
 }

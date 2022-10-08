@@ -36,3 +36,8 @@ spring:
             enable: true
 #Path to save PDFs
 directory: E:\\HBMS\\
+#Jwt
+hbms:
+  jwt:
+    secretKeyHBMS: secretKeyHBMS
+    expirationTime: 3600000

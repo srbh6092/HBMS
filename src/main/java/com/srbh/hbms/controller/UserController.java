@@ -5,16 +5,21 @@ import com.srbh.hbms.model.enums.Role;
 import com.srbh.hbms.model.request.SignUpRequest;
 import com.srbh.hbms.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("api/v1/user")
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<User> getAllUsers(){
@@ -30,7 +35,7 @@ public class UserController {
     public User addUser(@RequestBody SignUpRequest signUpRequest){
         User user =User.builder()
                 .username(signUpRequest.getUsername())
-                .password(signUpRequest.getPassword())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .email(signUpRequest.getEmail())
                 .mobile(signUpRequest.getMobile())
                 .role(signUpRequest.getRole().equalsIgnoreCase("ADMIN")

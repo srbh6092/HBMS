@@ -19,6 +19,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/booking")
 public class BookingController {
